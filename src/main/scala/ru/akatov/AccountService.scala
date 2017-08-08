@@ -57,7 +57,7 @@ class AccountService(list: List[Account]) extends Actor with ActorLogging {
       log.info(s"Account deleted: $acc")
     case trans@Transfer(sourceId: Long, targetId: Long, amount: BigDecimal) =>
       try {
-        if (sourceId == targetId) throw new IllegalArgumentException("")
+        if (sourceId == targetId) throw new IllegalArgumentException("Source and target accounts must be different")
         val source = accounts(sourceId)
         val target = accounts(targetId)
         if (source.amount < amount) throw InsufficientFundsException(source.id, source.amount)
