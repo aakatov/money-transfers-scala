@@ -67,8 +67,8 @@ class AccountService(list: List[Account]) extends Actor with ActorLogging {
         sender() ! accounts(sourceId)
       } catch {
         case e: Exception =>
+          log.info(s"Transfer error: $trans - ${e.getMessage}")
           sender() ! akka.actor.Status.Failure(e)
-          throw e
       }
   }
 }
