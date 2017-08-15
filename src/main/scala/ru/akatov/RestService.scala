@@ -14,6 +14,11 @@ import spray.json.DefaultJsonProtocol._
 import scala.concurrent.duration._
 
 /**
+  * DTOs
+  */
+case class TrasnferDto(targetId: Long, amount: BigDecimal)
+
+/**
   * Account REST service
   */
 trait RestService {
@@ -21,6 +26,7 @@ trait RestService {
   implicit val materializer: ActorMaterializer
   implicit val accountFormat = jsonFormat3(Account)
   implicit val createAccountFormat = jsonFormat2(CreateAccount)
+  implicit val transferFormat = jsonFormat2(TrasnferDto)
   implicit val timeout: Timeout = 5.seconds
 
   val accountService: ActorRef
@@ -48,8 +54,8 @@ trait RestService {
           } ~
             path("transfer") {
               post {
-                parameter("target".as[Long], "amount") { (targetId, amount) =>
-                  val future = (accountService ? Transfer(id, targetId, BigDecimal(amount))).mapTo[Account]
+                entity(as[TrasnferDto]) { case TrasnferDto(targetId, amount) =>
+                  val future = (accountService ? Transfer(id, targetId, amount)).mapTo[Account]
                   completeOrRecoverWith(future) {
                     case ex@AccountNotFoundException(accId) if accId == id =>
                       complete(StatusCodes.NotFound, ex.getMessage)

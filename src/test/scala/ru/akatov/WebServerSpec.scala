@@ -24,6 +24,7 @@ class WebServerSpec extends WordSpec with Matchers with ScalatestRouteTest {
 
   implicit val accountFormat = service.accountFormat
   implicit val createAccountFormat = service.createAccountFormat
+  implicit val transferFormat = service.transferFormat
 
   "The service" should {
     "create an account for POST requests" in {
@@ -45,7 +46,8 @@ class WebServerSpec extends WordSpec with Matchers with ScalatestRouteTest {
       val acc1 = accounts.head
       val acc2 = accounts.tail.head
       val amount = 10
-      Post(s"/account/${acc1.id}/transfer?target=${acc2.id}&amount=$amount") ~> routes ~> check {
+      val dto = TrasnferDto(acc2.id, BigDecimal(amount))
+      Post(s"/account/${acc1.id}/transfer", dto) ~> routes ~> check {
         status shouldBe StatusCodes.OK
         responseAs[Account] shouldBe acc1.copy(amount = acc1.amount - amount)
       }
@@ -54,7 +56,8 @@ class WebServerSpec extends WordSpec with Matchers with ScalatestRouteTest {
       val acc1 = accounts.head
       val acc2 = accounts.tail.head
       val amount = acc1.amount + 1
-      Post(s"/account/${acc1.id}/transfer?target=${acc2.id}&amount=$amount") ~> routes ~> check {
+      val dto = TrasnferDto(acc2.id, amount)
+      Post(s"/account/${acc1.id}/transfer", dto) ~> routes ~> check {
         status shouldBe StatusCodes.BadRequest
       }
     }
@@ -62,7 +65,8 @@ class WebServerSpec extends WordSpec with Matchers with ScalatestRouteTest {
       val id = Long.MaxValue
       val acc2 = accounts.tail.head
       val amount = 10
-      Post(s"/account/$id/transfer?target=${acc2.id}&amount=$amount") ~> routes ~> check {
+      val dto = TrasnferDto(acc2.id, BigDecimal(amount))
+      Post(s"/account/$id/transfer", dto) ~> routes ~> check {
         status shouldBe StatusCodes.NotFound
       }
     }
@@ -70,7 +74,8 @@ class WebServerSpec extends WordSpec with Matchers with ScalatestRouteTest {
       val acc1 = accounts.head
       val id = Long.MaxValue
       val amount = 10
-      Post(s"/account/${acc1.id}/transfer?target=$id&amount=$amount") ~> routes ~> check {
+      val dto = TrasnferDto(id, BigDecimal(amount))
+      Post(s"/account/${acc1.id}/transfer", dto) ~> routes ~> check {
         status shouldBe StatusCodes.BadRequest
       }
     }
