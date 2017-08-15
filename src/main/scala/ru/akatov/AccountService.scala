@@ -52,7 +52,7 @@ class AccountService(list: List[Account]) extends Actor with ActorLogging {
       log.info(s"Account retrieved: $acc")
       sender() ! acc
     case DeleteAccount(id) =>
-      val acc = accounts(id)
+      val acc = accounts.get(id)
       accounts.remove(id)
       log.info(s"Account deleted: $acc")
     case trans@Transfer(sourceId: Long, targetId: Long, amount: BigDecimal) =>
