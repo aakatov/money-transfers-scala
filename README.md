@@ -15,7 +15,7 @@ sbt run
 The server starts at [http://localhost:8080/](http://localhost:8080/)
 
 # REST API
-See [API documentation](https://github.com/aakatov/money-transfers/API.md).
+See [API documentation](API.md).
 
 # See Also
 * [money-transfers](https://github.com/aakatov/money-transfers) - Java implementation using concurrency synchronization and Jersey.
