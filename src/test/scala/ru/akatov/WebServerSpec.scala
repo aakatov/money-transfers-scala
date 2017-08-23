@@ -29,7 +29,7 @@ class WebServerSpec extends WordSpec with Matchers with ScalatestRouteTest {
   "The service" should {
     "create an account for POST requests" in {
       val createAccount = CreateAccount("Mary", 500)
-      Post("/account", createAccount) ~> routes ~> check {
+      Post("/accounts", createAccount) ~> routes ~> check {
         status shouldBe StatusCodes.Created
         responseAs[Account] shouldBe Account(1L, createAccount.clientName, createAccount.amount)
       }
@@ -37,7 +37,7 @@ class WebServerSpec extends WordSpec with Matchers with ScalatestRouteTest {
     "return an account for GET requests" in {
       val acc = accounts.head
       val id = acc.id
-      Get(s"/account/$id") ~> routes ~> check {
+      Get(s"/accounts/$id") ~> routes ~> check {
         status shouldBe StatusCodes.OK
         responseAs[Account] shouldBe acc
       }
@@ -47,7 +47,7 @@ class WebServerSpec extends WordSpec with Matchers with ScalatestRouteTest {
       val acc2 = accounts.tail.head
       val amount = 10
       val dto = TrasnferDto(acc2.id, BigDecimal(amount))
-      Post(s"/account/${acc1.id}/transfer", dto) ~> routes ~> check {
+      Post(s"/accounts/${acc1.id}/transfer", dto) ~> routes ~> check {
         status shouldBe StatusCodes.OK
         responseAs[Account] shouldBe acc1.copy(amount = acc1.amount - amount)
       }
@@ -57,7 +57,7 @@ class WebServerSpec extends WordSpec with Matchers with ScalatestRouteTest {
       val acc2 = accounts.tail.head
       val amount = acc1.amount + 1
       val dto = TrasnferDto(acc2.id, amount)
-      Post(s"/account/${acc1.id}/transfer", dto) ~> routes ~> check {
+      Post(s"/accounts/${acc1.id}/transfer", dto) ~> routes ~> check {
         status shouldBe StatusCodes.BadRequest
       }
     }
@@ -66,7 +66,7 @@ class WebServerSpec extends WordSpec with Matchers with ScalatestRouteTest {
       val acc2 = accounts.tail.head
       val amount = 10
       val dto = TrasnferDto(acc2.id, BigDecimal(amount))
-      Post(s"/account/$id/transfer", dto) ~> routes ~> check {
+      Post(s"/accounts/$id/transfer", dto) ~> routes ~> check {
         status shouldBe StatusCodes.NotFound
       }
     }
@@ -75,14 +75,14 @@ class WebServerSpec extends WordSpec with Matchers with ScalatestRouteTest {
       val id = Long.MaxValue
       val amount = 10
       val dto = TrasnferDto(id, BigDecimal(amount))
-      Post(s"/account/${acc1.id}/transfer", dto) ~> routes ~> check {
+      Post(s"/accounts/${acc1.id}/transfer", dto) ~> routes ~> check {
         status shouldBe StatusCodes.BadRequest
       }
     }
     "delete an account for DELETE requests" in {
       val acc = accounts.head
       val id = acc.id
-      Delete(s"/account/$id") ~> routes ~> check {
+      Delete(s"/accounts/$id") ~> routes ~> check {
         status shouldBe StatusCodes.NoContent
       }
     }

@@ -32,7 +32,7 @@ trait RestService {
   val accountService: ActorRef
 
   val routes: Route = {
-    pathPrefix("account") {
+    pathPrefix("accounts") {
       pathEnd {
         post {
           entity(as[CreateAccount]) { createAcnt =>
